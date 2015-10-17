@@ -1,0 +1,31 @@
+TP BDD:
+
+1.1 project[fnom](fournisseurs);
+
+1.2 project[fnom,fid,fad]( select[fad='Paris'](fournisseurs) );
+1.3 project[fnom]( select[fad ='Paris'](fournisseurs) );
+1.4 project[anom]( select[acoul ='vert'] (articles) );
+1.5 project[aid]( select[prix<20] (catalogue) );
+1.6 project[fid]( select[prix<20] (catalogue) );
+1.7 project[fid] (select[prix>10 and prix<20](catalogue));
+1.8 project[fid]( select[prix>10](catalogue) intersect select[prix<20](catalogue) );
+1.9 project[aid]( select [acoul='vert'](articles) union select [acoul='rouge'](articles) );
+1.10 project[aid]( select [acoul='vert'](articles) intersect select [acoul='rouge'](articles) );
+
+
+
+3.1 project[anom](articles join catalogue);
+3.2 project[anom,prix,fnom](articles join catalogue join fournisseurs);
+3.3 project[fid](select [acoul ='rouge'](articles) join fournisseurs);
+3.4 project[fid,fnom](select [prix < 20](catalogue) join fournisseurs);
+3.5 project[fid,fnom](select [prix > 10000](catalogue) join fournisseurs);
+3.6 project[fnom,fad](select [prix > 1000](catalogue) join fournisseurs);
+3.7 project[aid,aid2](select[acoul='vert'](articles) times select[acoul2='rouge'](rename[aid2,anom2,acoul2](articles)) );
+3.8 project[aid](articles) minus project[aid](catalogue);
+3.9 project[anom]( (project[aid](articles) minus project[aid](catalogue)) join (articles) );
+3.10 project[fid]( project[fid](select[acoul='vert'](articles) join (catalogue)) intersect project[fid](select[acoul='rouge'](articles) join (catalogue)));
+3.11 project[fnom]( (select[acoul='noir'](articles)) join (catalogue) join(fournisseurs));
+3.12 project[aid,fid](select[aid=aid2 AND fid<>fid2](catalogue TIMES rename[fid2, aid2,prix](catalogue)));
+3.13 project[fid,fnom](fournisseurs minus project[fid,fnom,fad](fournisseurs join select[acoul='noir'](articles join catalogue) union select[acoul='argente'](articles join catalogue) ));
+
+

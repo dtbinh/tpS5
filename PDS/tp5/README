@@ -1,0 +1,7 @@
+OUWE MISSI OUKEM Jean-Hugo Groupe 3
+
+
+(Executez) Si on tue le processus père, les processus fils continuent de s'exécuter.
+
+(Observez) Le processus tué est marqué comme "defunct", une fois que le processus père a attendu la fin de son fils, ce dernier ne s'affiche plus dans les processus actif après la commande "ps -a".
+

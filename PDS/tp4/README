@@ -1,0 +1,7 @@
+OUWE MISSI OUKEM Jean-Hugo GRP3
+
+J'ai fait la fonction mcat et le script qui génère un fichier directement utilisable par gnuplot. 
+Ma fonction mcat marche (elle m'affiche bien le texte) cependant, peut importe la taille de mon buffer, j'obtiens toujours le même résultat au niveau du temps.
+J'ai passé du temps à chercher le bug sans succès. Je suis interessé par votre avis.
+
+

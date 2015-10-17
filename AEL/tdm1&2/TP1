@@ -1,0 +1,55 @@
+1. expression : [A-Z].[A-Za-z]* 
+mot appartenant : Arbre 
+mot n'appartenant pas : arbre
+
+2. expression : \+33[1-9][0-9]{8} 
+mot appartenant : +33627921105 
+mot n'appartenant pas : +336279211058 
+
+3. expression : [02][1-9]|[13-8][0-9]|9([0-5]|7[1-6])|2A|2B 
+mot appartenant : 59, 971 
+mot n'appartenant pas : 89544, terry
+
+4. expression : [A-Za-z](_?[A-Za-z0-9])* 
+mot appartenant : t0to-ro 
+mot n'appartenant pas : _tyty
+
+5. expression : [1-9]+([0-9]*_[0-9]+)*|0x([0-9a-fA-F]+(_[0-9a-fA-F]+)*)|0[0-7]*(_[0-7]+)*  
+mot appartenant : 0xFFFF 0xFF_01 
+mot n'appartenant pas : 078, 0x_FF
+
+6. expression : (\s)*[A-Za-z](_?[A-Za-z0-9])*(\s)*(,(\s)*[A-Za-z](_?[A-Za-z0-9])*(\s)*)*
+mot appartenant : Absd_545   ,    sfsf8_d 
+mot n'appartenant pas : azebds_ ,sdfsf_58 ,
+
+7. expression : \s*[A-Za-z](_?[A-Za-z0-9])*(=([1-9]+([0-9]*_[0-9]+)*|0x([0-9a-fA-F]+(_[0-9a-fA-F]+)*)|0[0-7]*(_[0-7]+)*))?\s*(,(\s)*([A-Za-z](_?[A-Za-z0-9])*)(=([1-9]+([0-9]*_[0-9]+)*|0x([0-9a-fA-F]+(_[0-9a-fA-F]+)*)|0[0-7]*(_[0-7]+)*))?\s*)*
+mot appartenant : x, y=3, red=0xFF0000
+mot n'appartenant pas : x, y=3, red=0xFF0000 ,
+
+8. expression : "([^"])*" 
+mot appartenant : "ajzheajz54687àçhejzah" 
+mot n'appartenant pas : "a"b"
+
+9. expression : "([^"])*"("([^"])*")*
+mot appartenant :
+mot n'appartenant pas :
+
+10. expression : "([^"\\](\\\\|\\")*)*"
+mot appartenant : "bnerje\\azekajekza\"azeae"
+mot n'appartenant pas :"bsdjfsjhe\"""
+
+11. expression :  [a-zA-z:_]([a-zA-z:_0-9.-])*
+mot appartenant : _zeuyrzury78
+mot n'appartenant pas :-5464eefzd
+
+12. expression : &[a-zA-z:_]([a-zA-z:_0-9.-])*;
+mot appartenant :&azlkejake;
+mot n'appartenant pas : &&zerzre;
+
+13. expression : "([^<"&]*|(&[a-zA-z:_]([a-zA-z:_0-9.-])*;)*)*"
+mot appartenant :"&z; iuzeriuzr &dfsf;" 
+mot n'appartenant pas : "&z; iuzeriuzr &dfsf; zkerzeruiiez &&&zrzer;"
+
+14. expression : <[a-zA-z:_]([a-zA-z:_0-9.-])*(\s\s*[a-zA-z:_]([a-zA-z:_0-9.-])*\s*=\s*("([^<"&]*|(&[a-zA-z:_]([a-zA-z:_0-9.-])*;)*)*"))*\s*>
+mot appartenant : <button type="button" name="changer">
+mot n'appartenant pas : <button type="bu>

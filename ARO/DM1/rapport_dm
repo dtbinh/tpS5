@@ -1,0 +1,28 @@
+MASSAMBA Astelia
+OUWE MISSI OUKEM Jean-Hugo
+
+Premiere tentative :
+
+On a commencé par regrouper les huiles et le spiritueux en une variable TYPE.
+
+-param nb_total{TYPE} >= 0; nombre total par type de produit
+
+set DIVISION;
+set TYPE;
+set REGIONS;
+set CATEGORIE;
+set DETAILLANTS;
+
+
+
+param nb_pts_vente >= 0;
+param nb_total{TYPE} >= 0;
+param nb_total_region{TYPE, REGIONS};
+param nb_detaillants{CATEGORIE};
+
+subject to vente_minimale{DIVISION};
+
+
+
+
+

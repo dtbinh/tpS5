@@ -1,0 +1,50 @@
+Ex 1:
+1) Select anom as ARTICLE, count(acoul) as NB_COUL
+from articles
+group by anom;
+
+2) Select anom as article, count(DISTINCT fid) as nb_fournisseurs, min(prix) as PRIX_MINI, max(prix) as PRIX_MAX
+from catalogue natural join articles
+group by anom
+having count(DISTINCT fid) > 1;
+
+3) Select acoul as couleurs_rares
+from articles
+group by acoul
+having count(aid) = 1;
+
+4) Select acoul as COULEUR, avg(prix) as PRIX_MOYEN
+from catalogue natural join articles
+where anom not like 'Ferrari F430'
+group by acoul
+having count(aid) > 1
+order by avg(prix) desc;
+
+5) Select anom as article, acoul as couleur, count(DISTINCT fid) as nb_fournisseurs
+from catalogue natural join articles
+group by anom, acoul;
+
+6) Select anom, count(distinct fid) from Articles left outer join Catalogue on (articles.aid = catalogue.aid)
+group by anom;
+
+7) Select fnom as FOURNISSEUR, count(distinct aid) as NB_A from fournisseurs natural join Catalogue
+group by fnom
+having count(distinct aid) > 1;
+
+
+8)Select fnom, anom from fournisseurs natural join Catalogue natural join Articles
+group by fnom, anom
+having count(distinct acoul) > 1;
+
+9) Select anom from catalogue natural join articles
+group by anom
+having count(distinct fid) = 1;
+
+
+10) Select substring(anom from 1 for 1) as lettre, count(*) from articles
+Group by lettre
+order by lettre ASC
+
+11)Select substring(CAST(acoul as VARCHAR) for 1 from 1) as lettre, count(*) from articles
+GROUP by lettre
+
