@@ -26,7 +26,7 @@ int du_file(const char * pathname)
   int size;/*count dir size*/
   DIR * dir;
   
-  /*Chech if the st is init*/
+  /*Check if the st is init*/
   assert(lstat(pathname, &st) == 0);
 
   /*if it is a regular file, return the size (using the opt)*/
@@ -53,6 +53,7 @@ int du_file(const char * pathname)
     closedir(dir);
     return size;
   }
+
   /*4 autres type possibles*/
   printf("Warning the pathname were ignored because the type of file is not treated");
   return 0;
