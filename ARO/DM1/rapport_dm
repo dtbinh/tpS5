@@ -22,6 +22,10 @@ param nb_detaillants{CATEGORIE};
 
 subject to vente_minimale{DIVISION};
 
+On est tombé sur un probleme car le set TYPE n'était pas très maniable pour ce qui était demandé.
+
+
+On a pensé à creer un type DIVISION, mais on n'a pas réussi à les distinguer dans les formules de "subject to" 
 
 
 

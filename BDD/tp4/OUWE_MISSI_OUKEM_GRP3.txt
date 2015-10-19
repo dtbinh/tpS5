@@ -1,4 +1,54 @@
 
+
+Q1. (exist)
+select a1.acoul as couleurs_rares from articles as a1
+where not exists 
+(select a2.acoul from articles as a2 where a1.acoul = a2.acoul and a1.aid<> a2.aid);
+
+Q1bis.
+select acoul from articles 
+group by acoul
+having
+count (distinct aid) = 1
+
+Q2.(exist)
+select a1.anom from articles as a1
+where a1.acoul = 'rouge' and not exists
+(select a2.anom from articles as a2 where a2.anom=a1.anom and a2.acoul='vert')
+
+Q2(all/some)
+select a1.anom from articles as a1
+where a1.acoul='rouge' and a1.anom <> all
+(select a2.anom from articles as a2 where a2.acoul='vert')
+
+
+Q2.(in)
+select a1.anom from articles as a1
+where a1.acoul='rouge' and anom not in
+(select a2.anom from articles as a2 where a2.acoul='vert')
+
+
+Q3.(group by) reponse attendue 3 fournisseurs
+
+
+
+Q3.
+select f1.fnom from fournisseurs as f1 natural join catalogue as c1 natural join articles as a1
+where a1.acoul='rouge' and c1.prix =
+(select max(c2.prix) from catalogue as c2 natural join fournisseurs as f2 where
+f1.fid = f2.fid )
+
+
+Q4.
+select anom from articles as a1 natural join catalogue as c1
+where exists
+(select anom from catalogue as c2 natural join articles as a2 
+where c1.aid = c2.aid )
+
+
+
+
+
 4.(Group by)--FALSE
 select a1.anom from articles as a1 natural join catalogue as c1
 group by a1.anom
