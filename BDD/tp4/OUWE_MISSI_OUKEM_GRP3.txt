@@ -39,20 +39,11 @@ where a1.acoul='rouge' and c1.prix =
 f1.fid = f2.fid )
 
 
-Q4.
-select anom from articles as a1 natural join catalogue as c1
-where exists
-(select anom from catalogue as c2 natural join articles as a2 
-where c1.aid = c2.aid )
 
-
-
-
-
-4.(Group by)--FALSE
+4.(Group by)
 select a1.anom from articles as a1 natural join catalogue as c1
 group by a1.anom
-having count( distinct a1.anom) > 1
+having count(distinct fid) > 1
 
 
 4.(Exist)
@@ -61,40 +52,97 @@ where exists
 (select a2.anom from articles as a2 natural join catalogue as c2
 where a1.anom = a2.anom and c2.fid <> c1.fid)
 
-5.--FALSE
-select f1.fnom from articles as a1 natural join catalogue as c1 natural join fournisseurs as f1
-where exist
-(select f2.fnom from articles as a2 natural join catalogue as c2 natural join fournisseurs as f2
-where f1.nom = f2.nom and )
+5.select fnom
+from fournisseurs f
+where not exists 
+(select * from articles a 
+where not exists 
+(select * from catalogue c where a.aid=c.aid and c.fid=f.fid)); 
 
 
 6.(exist)
-select f1.fnom from articles as a1 natural join catalogue as c1 natural join fournisseurs as f1
+select f1.fnom from catalogue as c1 natural join fournisseurs as f1
 where not exists 
-(select f2.fnom from articles as a2 natural join catalogue as c2 natural join fournisseurs as f2
-where f1.fid <> f2.fid and c1.prix < c2.prix)
+(select * from catalogue as c2 
+where c1.prix < c2.prix)
 
-6.(any) --FALSE
-select f1.fnom from articles as a1 natural join catalogue as c1 natural join fournisseurs as f1
-where c1.prix < any
-(select c2.prix from catalogue as c2 natural join fournisseurs as f2)
+6.(all)
+select f1.fnom from catalogue as c1 natural join fournisseurs as f1
+where c1.prix >= ALL
+   (select c2.prix from catalogue as c2)
+(any)
+select f1.fnom from catalogue as c1 natural join fournisseurs as f1
+where not (c1.prix < ANY 
+   (select c2.prix from catalogue as c2))
 
-7. select anom , min(prix), max(prix)
+
+7.--FALSE 
+select anom , min(prix), max(prix)
 from articles natural join catalogue
-where exist
+where exists
 (select anom from articles as a2 natural join catalogue as c2
-where count(fid) > 1 )
-
-
-
-
-
----- select anom , min(prix), max(prix)
-from articles natural join catalogue
 group by anom
-having count(distinct fid ) > 1
+having count(distinct fid) > 1 )
 
-----
+
+8.(exists) select fnom, anom from articles natural join fournisseurs natural join catalogue
+where exists
+(select a1.anom from articles as a1 natural join catalogue as c1
+group by a1.anom, c1.fid
+having count(a1.acoul) >1 )
+(some/all)
+
+
+9.  select fid, count(aid) as qte from catalogue
+group by fid
+having count(aid) >= ALL
+(select count(aid) from catalogue group by fid)
+
+10.(group by)
+select anom from articles natural join catalogue
+group by anom
+having count(distinct fid) = 1
+
+(exist)
+select distinct a1.anom from articles as a1 natural join catalogue as c1
+where not exists
+(select anom from catalogue as c2
+where c1.fid<>c2.fid and a1.aid=c2.aid )
+
+
+**** acme brake fer micro smoke
+
+11.(exists)
+select f1.fnom from fournisseurs as f1 
+where not exists
+(select * from catalogue as c2
+where f1.fid = c2.fid)
+
+(in)
+select fnom from fournisseurs 
+where fid not in
+(select fid from catalogue)
+
+(ALL)
+
+
+12.(exists)
+select a1.anom from articles as a1 
+where not exists
+(select c1.aid from catalogue as c1
+where c1.aid = a1.aid and c1.prix < 100 )
+(min)
+select a1.anom from articles as a1 natural join catalogue
+group by aid
+having min(prix) < 100
+(all/some)
+
+
+13.
+select a1.aid from articles as a1
+where exists
+(select c2.aid from catalogue as c2 natural join fournisseurs as f1
+where a1.aid = c2.aid and f1.fad like '%USA') 
 
 
 
