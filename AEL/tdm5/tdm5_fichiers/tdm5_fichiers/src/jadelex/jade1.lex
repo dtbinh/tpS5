@@ -1,8 +1,12 @@
-package postfixees;
+package jadelex ;
+
 
 %%
 
-%unicode
+
+%class TokenizerV1
+%implements Tokenizer
+%public
 %line
 %column
 %{
@@ -13,21 +17,31 @@ package postfixees;
 
 %state COMMENTAIRE
 
-ENTIER_SIMPLE=[0-9]+
-PLUS=[+]|plus
 
-%% 
+
+LEVER=[lever]|[LEVER]
+BAISSER=[baisser]|[BAISSER]
+
+ESPACE=[\s$]
+COMMENTAIRES=[////][^[\n$]///*]*[\n$]
+
+
+
+
+%%
 
 <YYINITIAL> {
-      {ENTIER_SIMPLE}
-            {
-                  return new Valeur(yytext());
-            }
-      {PLUS}
-            {
-                  return new Plus(yytext());
-            }
+      {LEVER}
+      		{return new PenMode(false);}
+
+      {BAISSER}
+      		{return new PenMode(true);}
+
+      {COMMENTAIRES}|{ESPACE}   
+      		{}      
 }
+
+
 "/*"
       {
             yybegin(COMMENTAIRE) ;
@@ -46,6 +60,4 @@ PLUS=[+]|plus
             }
 }
 
-/* ajouter le cas des espaces et fins de ligne */
 
-/* ajouter les autres tokens */
