@@ -1,0 +1,47 @@
+1)
+select e1.eid , portee from employes left join avions as e1
+where exists
+(select distinct e2.eid from employes as e2 natural join certifications
+group by e2.eid
+having count(e2.eid) > 1) --pilote certifié sur au moins 2 avions
+
+
+2) 
+select enom from employes
+where salaire < 
+(select min(prix) from vols
+where dep = 'CDG' and arr = 'NOU')
+
+3)
+select dep, arr, distance from vols
+where distance <= 
+(select portee from avions 
+where aid = 
+(select aid from certifications natural join employes
+where salaire > 100 000)
+
+
+4)
+select enom from employes
+group by eid
+having eid IN EVERY
+(select eid from employes natural join certifications natural join avions
+where portee >= 1500)
+
+select enom from employes
+where exists 
+(select eid from employes natural join certifications natural join avions
+where portee >= 1500 and eid not in
+(select eid from employes natural join certifications natural join avions
+where portee < 1500))
+
+5)
+
+
+
+
+
+10) 
+select avg(salaire)-(select avg(e2.salaire) from employes as e2)from employes natural join certifications
+
+
