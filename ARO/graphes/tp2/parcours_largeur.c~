@@ -1,0 +1,37 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include "graphe.h"
+
+/* Couleurs */
+typedef enum {ROUGE=0, BLEU=1, VERT=2} tCouleur;
+typedef tCouleur tTabCouleurs[MAX_SOMMETS];
+
+
+
+
+void affiche_parcours_largeur(tGraphe graphe, tNumeroSommet sommet)
+{
+
+
+return
+}
+
+
+
+
+int main(int argc, char * agrv[])
+{
+  int num_sommet;
+  tGraphe graphe;
+  
+  if(argc < 3){
+    perror("Use ./parcours_largeur \"fichier graphe\" \"numero sommet\"");
+    return -1;
+  }
+  
+  graphe = grapheAlloue();
+
+  
+
+  return 0;
+}
