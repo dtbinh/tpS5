@@ -10,7 +10,6 @@
 
 void graphe2visu(tGraphe graphe, char *outfile)
 {
-
   FILE *fic;
   char commande[80];
   char dotfile[80]; /* le fichier dot pour créer le ps */
@@ -58,6 +57,8 @@ void graphe2visu(tGraphe graphe, char *outfile)
  
 }
 
+
+
 int main(int argc, char *argv[]) {
 
   tGraphe graphe;
@@ -70,9 +71,8 @@ int main(int argc, char *argv[]) {
   
   graphe = grapheAlloue();
   grapheChargeFichier(graphe,  argv[1]);
-  
+
   graphe2visu(graphe, argv[2]);
-
-
-
+  grapheLibere(graphe);
+  return 0;
 }

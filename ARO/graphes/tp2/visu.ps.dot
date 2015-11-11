@@ -1,0 +1,23 @@
+digraph {
+A [color=red];
+B [color=red];
+C [color=red];
+D [color=red];
+E [color=red];
+F [color=red];
+G [color=red];
+H [color=red];
+I [color=red];
+J [color=red];
+K [color=green];
+ A -> B
+ A -> C
+ A -> D
+ A -> E
+ B -> F
+ B -> G
+ C -> H
+ D -> I
+ E -> J
+ E -> K
+}

@@ -1,54 +1,160 @@
+#define _POSIX_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <unistd.h>
 #include "graphe.h"
 
 /* Couleurs */
 typedef enum {ROUGE=0, BLEU=1, VERT=2} tCouleur;
 typedef tCouleur tTabCouleurs[MAX_SOMMETS];
 
+int const verbose = 1;
+char *output = "visu.ps";
 
 
+
+void graphe2visu(tGraphe graphe, char *outfile, tTabCouleurs tabCouleurs)
+{
+  FILE *fic;
+  char commande[80];
+  char dotfile[80]; /* le fichier dot pour créer le ps */
+  int ret;
+  int i;
+  int is_oriente = 1;
+  int nb_arcs;
+  int nb_sommets;
+
+  tNomSommet nom_sommet1;
+  tNomSommet nom_sommet2;
+  tNomSommet nom_sommet3;
+  tArc arc;
+
+
+  /* on va cr´eer un fichier pour graphviz, dans le fichier "outfile".dot */
+  strcpy(dotfile, outfile);
+  strcat(dotfile, ".dot");
+  fic = fopen(dotfile, "w");
+  if (fic==NULL)
+    halt ("Ouverture du fichier %s en ´ecriture impossible\n", dotfile);
+
+  is_oriente = grapheEstOriente(graphe);
+  nb_arcs = grapheNbArcs(graphe);
+  nb_sommets = grapheNbSommets(graphe);
+
+  if(is_oriente)
+    fprintf(fic, "digraph {\n");
+  else
+    fprintf(fic, "graph {\n");
+  
+
+  for(i = 0; i < nb_sommets; i++){
+    grapheRecupNomSommet(graphe, i, nom_sommet3);
+    if(tabCouleurs[i] == VERT)
+      fprintf(fic, "%s [color=green];\n", nom_sommet3);
+    if(tabCouleurs[i] == BLEU)
+      fprintf(fic, "%s [color=blue];\n", nom_sommet3);
+    if(tabCouleurs[i] == ROUGE)
+      fprintf(fic, "%s [color=red];\n", nom_sommet3);
+  }
+
+
+  for(i = 0; i < nb_arcs; i++){
+    
+    arc = grapheRecupArcNumero(graphe, i);
+    grapheRecupNomSommet(graphe, arc.orig, nom_sommet1);
+    grapheRecupNomSommet(graphe, arc.dest, nom_sommet2);
+    if(is_oriente)
+      fprintf(fic," %s -> %s\n",nom_sommet1, nom_sommet2);
+    else
+      fprintf(fic," %s -- %s\n", nom_sommet1, nom_sommet2);
+  }
+  fprintf(fic, "}\n");
+  
+  /**/
+  
+  fclose(fic);
+  sprintf(commande, "dot -Tps %s -o %s", dotfile, outfile);
+  ret = system(commande);
+  if (ret == -1)
+    halt("La commande suivante a echouée : %s\n", commande);
+  
+  
+}
 
 void affiche_parcours_largeur(tGraphe graphe, tNumeroSommet num_sommet)
 {
   tFileSommets file;
-  struct tTabCouleurs tab_couleurs;
+  tNomSommet nom_sommet;
+  tNumeroSommet current_voisin;
+  tTabCouleurs tab_couleurs;
   int i, nb_sommets, voisins;
-   
-  nb_sommets = grapheNbSommets(graphe);
-  file = fileSommetsAlloue ();
+  int ret;
+  char *argv[3];
+  argv[0] = "evince";
+  argv[1] = output;
+  argv[2] = NULL;
 
-  fileSommetsEnfile(file, num_sommet);
-  tab_couleurs[num_sommet] = VERT;
+  switch(fork()){
+  case 0 : ret = execvp(argv[0], argv);
+    if (ret == -1)
+      halt("Error evince");
+    exit(EXIT_SUCCESS);   
+  default: 
+    file = fileSommetsAlloue();
+    nb_sommets = grapheNbSommets(graphe);
+    if(verbose)
+      printf("Nb sommets : %d\n", nb_sommets);
+    for(i = 0 ; i < nb_sommets; i++){
+      tab_couleurs[i] = BLEU;
+    }
 
-  while(!fileSommetsEstVide(file)){
-    num_sommet = fileSommetsDefile(file);
-    printf("sommet numero %d\n", num_sommet);
-    voisins = grapheNbVoisinsSommet(graphe, num_sommet);
-    for(i = 0; i < voisins; i++){
-      if(tab_couleurs[i] == BLEU ){
-	fileSommetsEnfile(file, num_sommet);
-	tab_couleurs[i] = VERT;
+    fileSommetsEnfile(file, num_sommet);
+    tab_couleurs[num_sommet] = VERT;
+    grapheRecupNomSommet(graphe, num_sommet, nom_sommet);
+    printf("Sommet %s empilé\n", nom_sommet);
+    graphe2visu(graphe, output, tab_couleurs);
+    printf("ici\n");
+    sleep(2);
+    while(!fileSommetsEstVide(file)){
+        
+      voisins = grapheNbVoisinsSommet(graphe, num_sommet);
+      if(verbose)    
+	printf("Nb voisins : %d\n", voisins);
+    
+      for(i = 0; i < voisins; i++){
+	current_voisin = grapheVoisinSommetNumero(graphe, num_sommet, i);
+	if(tab_couleurs[current_voisin] == BLEU ){
+	  fileSommetsEnfile(file, current_voisin);
+	  tab_couleurs[current_voisin] = VERT;
+	  grapheRecupNomSommet(graphe, current_voisin, nom_sommet);
+	  printf("Sommet %s empilé\n", nom_sommet);
+	  graphe2visu(graphe, output, tab_couleurs);
+	  sleep(2);
+	}
+	if(verbose)      
+	  printf("voisin num %d\n", current_voisin);
       }
+      tab_couleurs[num_sommet] = ROUGE;
+      num_sommet = fileSommetsDefile(file);
+      grapheRecupNomSommet(graphe, num_sommet, nom_sommet);
+      if(verbose)    
+	printf("Sommet %s depilé\n", nom_sommet);
+      graphe2visu(graphe, output, tab_couleurs);
+      sleep(2);
+     
     }
+    fileSommetsLibere(file);
+
+
+    wait(NULL);
   }
   
-  for(i = 0 ; i < nb_sommets; i++){
-    tab_couleurs[i] = BLEU;
-  }
-  for(i = 0 ; i < nb_sommets; i++){
-    if( tab_couleurs[i] == BLEU){
-      fileSommetsEnfile (file, i);
-    }
-    else if( tab_couleurs[i] == VERT){
 
-    }
-    else if( tab_couleurs[i] == ROUGE){
 
-    }
-  }
-  
-   fileSommetsLibere(file);
 }
 
 

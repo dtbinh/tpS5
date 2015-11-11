@@ -66,54 +66,126 @@ struct job_t *treat_argv(char **argv) {
 
 /* do_bg - Execute the builtin bg command */
 void do_bg(char **argv) {
-    printf("do_bg : To be implemented\n");
+    struct job_t *job;
+    if(verbose)
+        printf("do_bg: entering\n");
 
+    job = treat_argv(argv);
+    if(job == NULL){
+        if(verbose)
+            printf("do_bg: job not found\n");
+        return;
+    }
+    job->jb_state = BG;
+
+    if(verbose)
+        printf("do_bg: exiting\n");
     return;
 }
 
 /* waitfg - Block until process pid is no longer the foreground process */
 void waitfg(pid_t pid) {
-  struct job_t * job;
-  job = jobs_getjobpid(pid);
-  while(job->jb_state != BG && job->jb_state != ST )
-    sleep(1);
-  return;
+    struct job_t *job;
+    if(verbose)
+        printf("waitfg: entering\n");
+
+    job = jobs_getjobpid(pid);
+    while(job->jb_state == FG){
+        sleep(1);
+        if(verbose)
+            printf("waitfg: job state %d { 0: UNDEF, 1: BG, 2: FG, 3: ST }\n", job->jb_state);
+    }
+
+    if(verbose)
+        printf("waitfg: exiting\n");
+    return;
 }
 
 /* do_fg - Execute the builtin fg command */
 void do_fg(char **argv) {
-    printf("do_fg : To be implemented\n");
+    struct job_t *job;
+    if(verbose)
+        printf("do_fg: entering\n");
 
+    job = treat_argv(argv);
+    if(job == NULL){
+        if(verbose)
+            printf("do_fg: job not found\n");
+        return;
+    }
+    job->jb_state = FG;
+    while(job->jb_state != BG)
+        sleep(1);
+
+    if(verbose)
+        printf("do_fg: exiting\n");
     return;
 }
 
 /* do_stop - Execute the builtin stop command */
 void do_stop(char **argv) {
-  
+    struct job_t *job;
+    if(verbose)
+        printf("do_stop: entering\n");
 
+    job = treat_argv(argv);
+    if(job == NULL){
+        if(verbose)
+            printf("do_stop: job not found\n");
+        return;
+    }
+    if(kill(job->jb_pid, SIGTSTP) != 0 && verbose)
+        printf("do_stop: stop failed\n");
+
+    if(verbose)
+        printf("do_stop: exiting\n");
     return;
 }
 
 /* do_kill - Execute the builtin kill command */
 void do_kill(char **argv) {
-    printf("do_kill : To be implemented\n");
+    struct job_t *job;
+    if(verbose)
+        printf("do_kill: entering\n");
 
+    job = treat_argv(argv);
+    if(job == NULL){
+        if(verbose)
+            printf("do_kill: job not found\n");
+        return;
+    }
+    if(kill(job->jb_pid, SIGKILL) != 0 && verbose)
+        printf("do_kill: kill failed\n");
+
+    if(verbose)
+        printf("do_kill: exiting\n");
     return;
 }
 
 /* do_exit - Execute the builtin exit command */
 void do_exit() {
-  pid_t pid;
-  pid = getpid();
-  if(kill(pid, SIGKILL) != 0 && verbose){
-      printf("Error exit");
-  }
-    return;
+    struct job_t *job;
+    if(verbose)
+        printf("do_exit: entering\n");
+
+    while((job = jobs_getstoppedjob()) != NULL){
+        if(kill(job->jb_pid, SIGKILL) != 0 && verbose)
+            printf("do_exit: kill failed\n");
+    }
+
+    if(verbose)
+        printf("do_exit: exiting\n");
+    exit(EXIT_SUCCESS);
 }
 
-/* do_jobs - Execute the builtin fg command */
+/* do_jobs - Print the job list */
 void do_jobs() {
-    printf("do_jobs : To be implemented\n");
+    if(verbose)
+        printf("do_jobs: entering\n");
 
+    jobs_listjobs();
+
+    if(verbose)
+        printf("do_jobs: exiting\n");
     return;
 }
