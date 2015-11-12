@@ -1,10 +1,7 @@
 1)
-select e1.eid , portee from employes left join avions as e1
-where exists
-(select distinct e2.eid from employes as e2 natural join certifications
-group by e2.eid
-having count(e2.eid) > 1) --pilote certifiÃ© sur au moins 2 avions
-
+select eid, max(portee)from Certifications natural join Avions
+group by eid
+having count(aid) > 1;
 
 2) 
 select enom from employes
@@ -14,39 +11,60 @@ where dep = 'CDG' and arr = 'NOU')
 
 3)
 select dep, arr, distance from vols
-where distance <= 
-(select portee from avions 
-where aid = 
-(select aid from certifications natural join employes
-where salaire > 100 000)
-
+where distance <= ALL
+(select portee from avions natural join employes natural join certifications 
+where salaire > 100000)
 
 4)
-select enom from employes
-group by eid
-having eid IN EVERY
-(select e2.eid from employes as e2 natural join certifications natural join avions
-where portee >= 1500)
+SELECT distinct E.enom
+FROM Employes E
+WHERE 1500 < ALL( SELECT min(A2.portee)
+		FROM Employes E2 natural join Certifications C2 natural join Avions A2
+		WHERE E.eid = E2.eid);
 
-select enom from employes
-where exists 
-(select eid from employes natural join certifications natural join avions
-where portee >= 1500 and eid not in
-(select eid from employes natural join certifications natural join avions
-where portee < 1500))
+select distinct e1.enom from employes as e1
+where 1500 < ALL 
+(select min(e2.portee) from employes as e2 natural join certifications natural join avions
+where e1.eid = e2.eid);
 
-5)
+
+5)select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
+where 1500 < ALL
+(select min(a2.portee) from employes as e2 natural join certifications as c2 natural join avions as a2
+where e1.eid = e2.eid and a1.aid<>a2.aid);
+
+6)select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
+where 1500 < ALL
+(select min(a2.portee) from employes as e2 natural join certifications as c2 natural join avions as a2
+where e1.eid = e2.eid and exists 
+(select a3.anom from avions as a3 where a3.anom LIKE '%Boeing%'));
+
+7)select eid, enom, salaire from employes
+where salaire = 
+	(select max(salaire) from 
+		(select salaire from employes 
+		except
+		select max(salaire) from employes) S);
+
+
+8)select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
+where portee > 2000 and eid not in
+(select c2.eid from certifications as c2 natural join avions as a2 where a2.anom LIKE '%Boeing%');
+
 
 
 9)
 select enom, salaire from employes
 where salaire > 
-(select e2.salaire from employes as e2 natural join certifications as c2)
+(select avg(e2.salaire) from employes as e2 natural join certifications as c2)
 and eid not in 
 (select e3.eid from employes as e3 natural join certifications as c3)
 
 
 10) 
 select avg(salaire)-(select avg(e2.salaire) from employes as e2)from employes natural join certifications
+
+11)
+-- C'est impossible car il n'existe pas de vols au départ de Tontouta et de vols ayant pour arrivée l'aeroport de Timbuktu.
 
 
