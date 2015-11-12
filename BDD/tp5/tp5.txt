@@ -16,11 +16,11 @@ where distance <= ALL
 where salaire > 100000)
 
 4)
-SELECT distinct E.enom
-FROM Employes E
-WHERE 1500 < ALL( SELECT min(A2.portee)
-		FROM Employes E2 natural join Certifications C2 natural join Avions A2
-		WHERE E.eid = E2.eid);
+select distinct e1.enom
+from employes as e1
+where 1500 < ALL
+(select min(portee) from employes as e2 natural join certifications natural join avions 
+where e1.eid = e2.eid);
 
 select distinct e1.enom from employes as e1
 where 1500 < ALL 
@@ -28,18 +28,21 @@ where 1500 < ALL
 where e1.eid = e2.eid);
 
 
-5)select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
+5)
+select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
 where 1500 < ALL
 (select min(a2.portee) from employes as e2 natural join certifications as c2 natural join avions as a2
 where e1.eid = e2.eid and a1.aid<>a2.aid);
 
-6)select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
+6)
+select distinct e1.enom from employes as e1 natural join certifications as c1 natural join avions as a1
 where 1500 < ALL
 (select min(a2.portee) from employes as e2 natural join certifications as c2 natural join avions as a2
 where e1.eid = e2.eid and exists 
 (select a3.anom from avions as a3 where a3.anom LIKE '%Boeing%'));
 
-7)select eid, enom, salaire from employes
+7)
+select eid, enom, salaire from employes
 where salaire = 
 	(select max(salaire) from 
 		(select salaire from employes 
