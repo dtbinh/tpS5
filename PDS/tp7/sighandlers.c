@@ -50,12 +50,12 @@ void sigchld_handler(int sig) {
       if(verbose)
 	printf("sigchld_handler: %d exited", (int) pid);
     }
-    else if(WIFEXITED(status)){
+    else if(WIFSIGNALED(status)){
       jobs_deletejob(pid);
       if(verbose)
 	printf("sigchld_handler: %d signaled", (int) pid);
     }
-    else if(WIFEXITED(status)){
+    else if(WIFSTOPPED(status)){
       job = jobs_getjobpid(pid);
       job-> jb_state = ST;
       if(verbose)
