@@ -15,8 +15,8 @@
 
 void do_pipe(char *cmds[MAXCMDS][MAXARGS], int nbcmd, int bg) {
  
-int pid, i, j; 
- int **pipefd;
+  int pid, i, j; 
+  int ** pipefd;
  
   if(verbose)
     printf("do_pipe: entering\n");
@@ -36,7 +36,7 @@ int pid, i, j;
   }
 
   for(i = 0 ; i < nbcmd - 1 ; i++)
-    pipe(pipefd[i]);
+    assert( pipe(pipefd[i]) == 0);
 
   
   switch(pid = fork()){
