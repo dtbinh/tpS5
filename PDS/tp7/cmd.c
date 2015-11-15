@@ -66,7 +66,7 @@ struct job_t *treat_argv(char **argv) {
 
 /* do_bg - Execute the builtin bg command */
 void do_bg(char **argv) {
-    struct job_t *job;
+   struct job_t *job;
     if(verbose)
         printf("do_bg: entering\n");
 
@@ -77,9 +77,12 @@ void do_bg(char **argv) {
         return;
     }
     job->jb_state = BG;
+    if(kill(job->jb_pid, SIGCONT) != 0)
+        printf("do_bg: kill failed\n");
 
     if(verbose)
         printf("do_bg: exiting\n");
+   
     return;
 }
 
@@ -114,8 +117,9 @@ void do_fg(char **argv) {
         return;
     }
     job->jb_state = FG;
-    while(job->jb_state != BG)
-        sleep(1);
+    if(kill(job->jb_pid, SIGCONT) != 0)
+        printf("do_fg: kill failed\n");
+    waitfg(job->jb_pid);
 
     if(verbose)
         printf("do_fg: exiting\n");
@@ -124,7 +128,7 @@ void do_fg(char **argv) {
 
 /* do_stop - Execute the builtin stop command */
 void do_stop(char **argv) {
-    struct job_t *job;
+   struct job_t *job;
     if(verbose)
         printf("do_stop: entering\n");
 
