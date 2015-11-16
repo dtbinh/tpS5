@@ -3,12 +3,12 @@ A [color=red];
 B [color=red];
 C [color=red];
 D [color=red];
-E [color=red];
-F [color=red];
-G [color=red];
-H [color=red];
-I [color=red];
-J [color=red];
+E [color=green];
+F [color=green];
+G [color=green];
+H [color=green];
+I [color=green];
+J [color=green];
 K [color=green];
  A -> B
  A -> C

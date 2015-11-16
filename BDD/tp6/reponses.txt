@@ -1,0 +1,67 @@
+
+1.
+
+Q4) femme(mia)|femme(yolande)|femme(lapin)
+Q5) femme(X)
+Q6) femme(X) :- aime(vincent, X), femme(X). 
+Q7) Définir un type homme
+Q8) jaloux(vincent, X)
+Q9) jaloux(vincent, _)
+
+2.
+
+Q10)
+e(a,b).
+e(b,c).
+e(b,f).
+e(f,g).
+e(d,a).
+e(d,e).
+e(e,f).
+e(e,g).
+
+Q11)
+regle :
+p(X,Y) :- e(X,Y).
+p(X,Z) :- e(X,Y), p(Y,Z).
+
+requete:
+p(X,Y) 
+resultat:
+{                                           
+  p(a,b),
+  p(a,c),
+  p(a,f),
+  p(a,g),
+  p(b,c),
+  p(b,f),
+  p(b,g),
+  p(d,a),
+  p(d,b),
+  p(d,c),
+  p(d,e),
+  p(d,f),
+  p(d,g),
+  p(e,f),
+  p(e,g),
+  p(f,g)
+}
+
+
+Q12)
+Q13) Aucune idée.
+Q14) Résultat avec le graphe de base : 
+{                                           
+  pi(a,g),
+  pi(d,c),
+  pi(d,f),
+  pi(d,g)
+}
+
+
+
+3.
+
+
+
+

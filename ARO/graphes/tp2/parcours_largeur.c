@@ -117,7 +117,7 @@ void affiche_parcours_largeur(tGraphe graphe, tNumeroSommet num_sommet)
     grapheRecupNomSommet(graphe, num_sommet, nom_sommet);
     printf("Sommet %s empilé\n", nom_sommet);
     graphe2visu(graphe, output, tab_couleurs);
-    printf("ici\n");
+
     sleep(2);
     while(!fileSommetsEstVide(file)){
         
