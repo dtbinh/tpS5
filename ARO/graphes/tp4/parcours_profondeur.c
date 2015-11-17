@@ -21,7 +21,7 @@ void graphe2visu(tGraphe graphe, char *outfile, tTabCouleurs tabCouleurs)
 {
   FILE *fic;
   char commande[80];
-  char dotfile[80]; /* le fichier dot pour créer le ps */
+  char dotfile[80]; 
   int ret;
   int i;
   int is_oriente = 1;
@@ -34,7 +34,7 @@ void graphe2visu(tGraphe graphe, char *outfile, tTabCouleurs tabCouleurs)
   tArc arc;
 
 
-  /* on va cr´eer un fichier pour graphviz, dans le fichier "outfile".dot */
+ 
   strcpy(dotfile, outfile);
   strcat(dotfile, ".dot");
   fic = fopen(dotfile, "w");
@@ -73,8 +73,7 @@ void graphe2visu(tGraphe graphe, char *outfile, tTabCouleurs tabCouleurs)
       fprintf(fic," %s -- %s\n", nom_sommet1, nom_sommet2);
   }
   fprintf(fic, "}\n");
-  
-  /**/
+ 
   
   fclose(fic);
   sprintf(commande, "dot -Tps %s -o %s", dotfile, outfile);
@@ -83,11 +82,18 @@ void graphe2visu(tGraphe graphe, char *outfile, tTabCouleurs tabCouleurs)
     halt("La commande suivante a echouée : %s\n", commande);
   
   
+    }
+
+
+
+void empile_voisin(){
+
 }
 
-void affiche_parcours_largeur(tGraphe graphe, tNumeroSommet num_sommet)
+
+void affiche_parcours_profondeur(tGraphe graphe, tNumeroSommet num_sommet)
 {
-  tFileSommets file;
+  tPileSommets pile;
   tNomSommet nom_sommet;
   tNumeroSommet current_voisin;
   tTabCouleurs tab_couleurs;
@@ -96,30 +102,30 @@ void affiche_parcours_largeur(tGraphe graphe, tNumeroSommet num_sommet)
   argv[0] = "evince";
   argv[1] = output;
   argv[2] = NULL;
-
   switch(fork()){
-    case -1: perror("fork");
-      exit(EXIT_FAILURE);  
+  case -1: perror("fork");
+    exit(EXIT_FAILURE);  
   case 0 : execvp(argv[0], argv);
     halt("Error evince");
-    exit(EXIT_FAILURE);   
-  default: 
-    file = fileSommetsAlloue();
+    exit(EXIT_FAILURE);
+  default:
+    pile = pileSommetsAlloue();
     nb_sommets = grapheNbSommets(graphe);
     if(verbose)
       printf("Nb sommets : %d\n", nb_sommets);
+    
     for(i = 0 ; i < nb_sommets; i++){
       tab_couleurs[i] = BLEU;
     }
 
-    fileSommetsEnfile(file, num_sommet);
+    pileSommetsEmpile(pile, num_sommet);
     tab_couleurs[num_sommet] = VERT;
     grapheRecupNomSommet(graphe, num_sommet, nom_sommet);
     printf("Sommet %s empilé\n", nom_sommet);
     graphe2visu(graphe, output, tab_couleurs);
 
     sleep(2);
-    while(!fileSommetsEstVide(file)){
+    while(!pileSommetsEstVide(pile)){
         
       voisins = grapheNbVoisinsSommet(graphe, num_sommet);
       if(verbose)    
@@ -128,33 +134,37 @@ void affiche_parcours_largeur(tGraphe graphe, tNumeroSommet num_sommet)
       for(i = 0; i < voisins; i++){
 	current_voisin = grapheVoisinSommetNumero(graphe, num_sommet, i);
 	if(tab_couleurs[current_voisin] == BLEU ){
-	  fileSommetsEnfile(file, current_voisin);
+	  pileSommetsEmpile(pile, current_voisin);
 	  tab_couleurs[current_voisin] = VERT;
 	  grapheRecupNomSommet(graphe, current_voisin, nom_sommet);
 	  printf("Sommet %s empilé\n", nom_sommet);
 	  graphe2visu(graphe, output, tab_couleurs);
 	  sleep(2);
+	  break;
 	}
+     
 	if(verbose)      
 	  printf("voisin num %d\n", current_voisin);
       }
-      tab_couleurs[num_sommet] = ROUGE;
-      num_sommet = fileSommetsDefile(file);
+      if(i == voisins){
+	tab_couleurs[num_sommet] = ROUGE;
+	grapheRecupNomSommet(graphe, num_sommet, nom_sommet);
+	if(verbose)    
+	  printf("Sommet %s depilé\n", nom_sommet);
+	pileSommetsDepile(pile);
+	graphe2visu(graphe, output, tab_couleurs);
+	sleep(2); 
+      }
+      if(!pileSommetsEstVide(pile))
+	num_sommet =  pileSommetsTete(pile);
       grapheRecupNomSommet(graphe, num_sommet, nom_sommet);
-      if(verbose)    
-	printf("Sommet %s depilé\n", nom_sommet);
-      graphe2visu(graphe, output, tab_couleurs);
-      sleep(2);
-     
     }
-    fileSommetsLibere(file);
-
-
-    wait(NULL);
   }
+  pileSommetsLibere(pile);
+
+
+  wait(NULL);
   
-
-
 }
 
 
@@ -164,13 +174,13 @@ int main(int argc, char * argv[])
 {
   tGraphe graphe;
   if(argc < 3){
-    perror("Use ./parcours_largeur \"fichier graphe\" \"numero sommet\"");
+    perror("Use ./parcours_profondeur \"fichier graphe\" \"numero sommet\"");
     return -1;
   }
   
   graphe = grapheAlloue();
   grapheChargeFichier(graphe,  argv[1]);
-  affiche_parcours_largeur(graphe, atoi(argv[2]));
+  affiche_parcours_profondeur(graphe, atoi(argv[2]));
   grapheLibere(graphe);
   
   return 0;
