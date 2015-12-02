@@ -1,0 +1,93 @@
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "graphe.h"
+
+/* Couleurs */
+typedef enum {ROUGE=0, BLEU=1, VERT=2} tCouleur;
+typedef tCouleur tTabCouleurs[MAX_SOMMETS];
+
+
+/* Fonction qui renvoie le maximum des deux entiers x et y 
+   (question facile, ne pas chercher de complications) */
+
+int max(int x, int y) {
+
+
+  // COMPLETER
+
+}
+
+/* Parcours en largeur 
+Entrée :
+- graphe : le graphe à parcourir, supposé *connexe* et *non orienté*
+- s : numéro du sommet de départ
+Sortie :
+- d : tableau d'entiers tel que
+      d[i] = distance de s au sommet i
+
+Remarque: nous n'avons pas besoin du tableau pred du poly.
+
+*/
+void plusCourteChaine(tGraphe graphe, tNumeroSommet s,
+		      int d[MAX_SOMMETS]) {
+
+  
+  // COMPLETER
+
+  
+}
+
+
+/*
+Calcule et renvoie le diamètre du graphe
+Entrée :
+- graphe : le graphe supposé *connexe* et *non orienté*
+Sortie :
+- le diamètre du graphe
+*/
+int calculeDiametre(tGraphe graphe) {
+
+
+  // COMPLETER
+
+  
+}
+
+  
+
+/////////////////////////////////////////////////////////////
+// Sauf mention contraire, vous ne devez pas modifier le main
+/////////////////////////////////////////////////////////////
+
+int main(int argc, char *argv[]) {
+
+  tGraphe graphe;
+  char *fic;
+  int diametre;
+  
+  /* Traitement des arguments */
+  if (argc!=2) 
+    halt("Usage : %s <fichier_graphe>\n", argv[0]);
+  
+  fic = argv[1];
+
+  /* Chargement du graphe */
+  graphe = grapheAlloue();
+  grapheChargeFichier(graphe, fic);
+  if (grapheEstOriente(graphe)) 
+    halt("Le graphe doit être non orienté\n");
+
+  /* Calcul du diamètre */
+  diametre = calculeDiametre(graphe);
+
+  /* Affichage du résultat */
+  printf("Le diamètre du graphe est : %d\n", diametre);
+
+  /* Libération du graphe */
+  grapheLibere(graphe);
+  exit(EXIT_SUCCESS);
+}
+

@@ -1,0 +1,78 @@
+NOM : OUWE MISSI OUKEM
+Prénom : Jean-Hugo
+Nom de la machine : a16p6
+
+
+==================
+Q1) Fait : OUI
+
+A-D -> A->B->C->D
+
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+
+
+
+==================
+Q2) Fait : OUI
+
+\ y|
+ \ |
+x \|  A   B   C   D   E 
+------------------------
+A  |  0   1   2   3   2 
+B  |  1   0   1   2   1
+C  |  2   1   0   1   1
+D  |  3   2   1   0   2
+E  |  2   1   1   2   0
+
+On remarque donc que la longeur max (le diametre) est de 3. 
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+   
+
+
+==================
+Q3) Fait : OUI
+
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+
+
+
+
+==================
+Q4) Fait : OUI
+
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+
+
+
+==================
+Q5) Fait : OUI
+
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+
+
+
+==================
+Q6) Fait : OUI
+
+Valeur de diamètre obtenue par votre programme pour :
+- graphe-1.grp : 4
+- graphe-2.grp : 5
+- graphe-3.grp : 9
+- graphe-4.grp : 11
+
+Mauvais diametre
+
+
+==================
+Q7) Fait : OUI/NON
+
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+
+==================
+Q8) Fait : OUI/NON
+
+Diamètre obtenu pour graphe-4.grp : 
+
+Expliquez les difficultés rencontrées si vous n'y arrivez pas
+

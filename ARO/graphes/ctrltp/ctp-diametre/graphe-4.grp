@@ -1,0 +1,16 @@
+type = non-oriente;
+
+sommets = A B C D E F G H I J K L;
+
+arcs = 
+     A B 1
+     A F 1
+     A G 1
+     B C 1
+     B D 1
+     D E 1
+     G H 1
+     G I 1
+     I J 1
+     F K 1
+     K L 1;

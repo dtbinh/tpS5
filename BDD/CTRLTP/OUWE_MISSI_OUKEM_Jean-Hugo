@@ -1,0 +1,77 @@
+
+1)
+
+
+drop table if exists categories;
+drop table if exists livres;
+drop table if exists lecteur;
+drop type if exists cate;
+
+CREATE TYPE cate as  ENUM
+	('Enfant', 'Ado', 'Adulte', 'Senior');
+
+CREATE TABLE Livres(
+	lid int primary key,                     
+	lnom varchar(30) not NULL
+	
+);
+
+CREATE TABLE Lecteur(
+	lid int primary key, 
+	lname varchar(1) not NULL,
+	lcat cate
+);
+
+CREATE TABLE Categories(
+	lecteurid int references lecteur(lid) on delete cascade on update cascade,  
+	livreid int references livres(lid) on delete cascade on update cascade  
+);
+
+
+2)
+
+INSERT INTO Lecteur VALUES (1,'A','Enfant');
+INSERT INTO Lecteur VALUES (2,'B','Ado');
+INSERT INTO Lecteur VALUES (3,'C','Adulte');
+INSERT INTO Lecteur VALUES (4,'D','Senior');
+
+INSERT INTO Livres VALUES (1,'Contes de fees');
+INSERT INTO Livres VALUES (2,'Amour d enfer');
+INSERT INTO Livres VALUES (3,'Solitude');
+INSERT INTO Livres VALUES (4,'Les roses');
+
+INSERT INTO Categories VALUES (1,1);
+INSERT INTO Categories VALUES (1,2);
+
+INSERT INTO Categories VALUES (2,3);
+INSERT INTO Categories VALUES (2,4);
+
+INSERT INTO Categories VALUES (3,2);
+INSERT INTO Categories VALUES (3,1);
+INSERT INTO Categories VALUES (3,3);
+
+INSERT INTO Categories VALUES (4,1);
+INSERT INTO Categories VALUES (4,3);
+
+select * from livres, lecteur --affiche toutes les données de la base
+
+3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
