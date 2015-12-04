@@ -7,7 +7,6 @@
 #include <time.h>
 #include <assert.h>
 #include <pthread.h>
-#include <semaphore.h>
 
 
 
@@ -16,15 +15,17 @@ struct cpt_gc_arg
 {
   char *bloc;
   unsigned long taille;
-  sem_t sem;
   unsigned long cpt;
 };
 
-
+/*Nombres de GC:   450016181
+Taux de GC:      0.500018
+Durée de calcul: 6.236212702
+(Attention: très peu de chiffre*/
 
 void * compteur_gc(void * arg2)
 {
-   unsigned long i, taille, cptr = 0;
+  unsigned long i, taille;
 
    struct cpt_gc_arg *arg = (struct cpt_gc_arg *)arg2;
 
@@ -34,17 +35,11 @@ void * compteur_gc(void * arg2)
 
   for (i = 0; i < taille; i++)
     if (arg->bloc[i] == 'G' || arg->bloc[i] == 'C')
-      cptr++;
+      arg->cpt++;
 
-  printf("fin thread\n");
-  sem_wait(&arg->sem);
-  arg->cpt += cptr;
-  sem_post(&arg->sem);
-
- 
+  printf("fin thread\n"); 
   pthread_exit(NULL);
-
-
+  
 }
 
 int main(int argc, char *argv[]) {
@@ -54,11 +49,14 @@ int main(int argc, char *argv[]) {
   int lus, nb_threads, i;
   off_t taille = 0;
   struct timespec debut, fin;
-  struct cpt_gc_arg arg;
+  struct cpt_gc_arg * arg_tab;
   pthread_t  * t_tab;
+  unsigned long cptFinal;
+  
+  cptFinal = 0;
 
   if(argc < 3){
-    printf("Usage %s \"fichier\" \"nombre de threads\"", argv[0]);
+    printf("Usage %s \"fichier\" \"nombre de threads\"\n", argv[0]);
     return -1;
   }
   assert(argv[1] != NULL);
@@ -78,50 +76,55 @@ int main(int argc, char *argv[]) {
   assert(lus != -1);
   assert(taille == st.st_size);/*verification de la taille du fichier*/
   close(fd);
-  printf("Size = %ld\n", taille);
+  
+  printf("File size = %ld\n", taille);
 
-  /*init la semaphore*/
-  sem_init(&arg.sem, 1, 1);
+  /*Init des tabs*/
+  t_tab = malloc(sizeof(pthread_t) *  nb_threads);
+  arg_tab = malloc(sizeof(struct cpt_gc_arg) *  nb_threads);
+  
+  /*init le tab de structures*/
+   for(i = 0; i < nb_threads; i++){
 
-  /*init le compteur*/
-  arg.cpt = 0;
-  arg.taille = taille/nb_threads;
-
+     pthread_t thread;
+     t_tab[i] = thread;
+     
+     arg_tab[i].cpt = 0;
+     arg_tab[i].taille = taille/nb_threads;
+   }
+   
   /* Calcul proprement dit */
   assert(clock_gettime(CLOCK_MONOTONIC, &debut) != -1);
     
-  t_tab = malloc(sizeof(pthread_t) *  nb_threads);
-
   for(i = 0; i < nb_threads; i++){
-    printf("i : %d ", i);
-    pthread_t  thread;
-    t_tab[i] = thread;
-    arg.bloc = &tampon[i * arg.taille];
-   
-    printf("bloc index : %ld\n", i * arg.taille);
+    printf("iteration : %d ", i);  
+    printf("bloc index : %ld\n", i*arg_tab[i].taille);
 
+    arg_tab[i].bloc = &tampon[i*arg_tab[i].taille];
+    
     if(taille%nb_threads != 0 && i == nb_threads - 1){
       printf("Modulo\n");
-      arg.taille = arg.taille + (taille%nb_threads);
+      arg_tab[i].taille =  arg_tab[i].taille + (taille%nb_threads);
     }
-    printf("Taille : %ld\n", arg.taille );
-
-    pthread_create (&thread, NULL, compteur_gc, &arg); 
+    printf("Taille : %ld\n",  arg_tab[i].taille );
+    pthread_create (&t_tab[i], NULL, compteur_gc, &arg_tab[i]); 
   }
 
    /*On attends tout les threads*/
    for(i = 0; i < nb_threads; i++){
      pthread_join(t_tab[i], NULL);
+     printf("arg num %d cpt = %ld\n", i, arg_tab[i].cpt);
+     cptFinal += arg_tab[i].cpt;
    }
+   
    printf("apres creation attente des threads\n");
-
    assert(clock_gettime(CLOCK_MONOTONIC, &fin) != -1);
 
    
 
   /* Affichage des résultats */
-  printf("Nombres de GC:   %ld\n", arg.cpt);
-  printf("Taux de GC:      %lf\n", ((double) arg.cpt) / ((double) taille));
+  printf("Nombres de GC:   %ld\n", cptFinal);
+  printf("Taux de GC:      %lf\n", ((double) cptFinal) / ((double) taille));
 
   fin.tv_sec  -= debut.tv_sec;
   fin.tv_nsec -= debut.tv_nsec;
