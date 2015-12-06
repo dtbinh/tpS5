@@ -18,6 +18,8 @@ struct cpt_gc_arg
   unsigned long cpt;
 };
 
+int verbose = 0;
+
 /*Nombres de GC:   450016181
 Taux de GC:      0.500018
 Durée de calcul: 6.236212702
@@ -30,14 +32,16 @@ void * compteur_gc(void * arg2)
    struct cpt_gc_arg *arg = (struct cpt_gc_arg *)arg2;
 
   taille = arg->taille;
-
-  printf("dans le thread\n");
+  if(verbose)
+    printf("dans le thread\n");
 
   for (i = 0; i < taille; i++)
     if (arg->bloc[i] == 'G' || arg->bloc[i] == 'C')
       arg->cpt++;
 
-  printf("fin thread\n"); 
+  if(verbose)
+    printf("fin thread\n"); 
+
   pthread_exit(NULL);
   
 }
@@ -76,8 +80,9 @@ int main(int argc, char *argv[]) {
   assert(lus != -1);
   assert(taille == st.st_size);/*verification de la taille du fichier*/
   close(fd);
-  
-  printf("File size = %ld\n", taille);
+
+  if(verbose)
+    printf("File size = %ld\n", taille);
 
   /*Init des tabs*/
   t_tab = malloc(sizeof(pthread_t) *  nb_threads);
@@ -97,43 +102,50 @@ int main(int argc, char *argv[]) {
   assert(clock_gettime(CLOCK_MONOTONIC, &debut) != -1);
     
   for(i = 0; i < nb_threads; i++){
-    printf("iteration : %d ", i);  
-    printf("bloc index : %ld\n", i*arg_tab[i].taille);
+    if(verbose){
+      printf("iteration : %d ", i);  
+      printf("bloc index : %ld\n", i*arg_tab[i].taille);
+    }
 
     arg_tab[i].bloc = &tampon[i*arg_tab[i].taille];
     
     if(taille%nb_threads != 0 && i == nb_threads - 1){
-      printf("Modulo\n");
+      if(verbose)      
+	printf("Modulo\n");
       arg_tab[i].taille =  arg_tab[i].taille + (taille%nb_threads);
     }
-    printf("Taille : %ld\n",  arg_tab[i].taille );
+    if(verbose)
+      printf("Taille : %ld\n",  arg_tab[i].taille );
     pthread_create (&t_tab[i], NULL, compteur_gc, &arg_tab[i]); 
   }
 
    /*On attends tout les threads*/
    for(i = 0; i < nb_threads; i++){
      pthread_join(t_tab[i], NULL);
-     printf("arg num %d cpt = %ld\n", i, arg_tab[i].cpt);
+     if(verbose)
+       printf("arg num %d cpt = %ld\n", i, arg_tab[i].cpt);
      cptFinal += arg_tab[i].cpt;
    }
-   
-   printf("apres creation attente des threads\n");
+   if(verbose)
+     printf("apres creation attente des threads\n");
    assert(clock_gettime(CLOCK_MONOTONIC, &fin) != -1);
 
    
 
   /* Affichage des résultats */
-  printf("Nombres de GC:   %ld\n", cptFinal);
-  printf("Taux de GC:      %lf\n", ((double) cptFinal) / ((double) taille));
-
-  fin.tv_sec  -= debut.tv_sec;
-  fin.tv_nsec -= debut.tv_nsec;
-  if (fin.tv_nsec < 0) {
-    fin.tv_sec--;
-    fin.tv_nsec += 1000000000;
-  }
-  printf("Durée de calcul: %ld.%09ld\n", fin.tv_sec, fin.tv_nsec);
-  printf("(Attention: très peu de chiffres après la virgule sont réellement significatifs !)\n");
-
-  return 0;
+   if(verbose){
+     printf("Nombres de GC:   %ld\n", cptFinal);
+     printf("Taux de GC:      %lf\n", ((double) cptFinal) / ((double) taille));
+   }
+   fin.tv_sec  -= debut.tv_sec;
+   fin.tv_nsec -= debut.tv_nsec;
+   if (fin.tv_nsec < 0) {
+     fin.tv_sec--;
+     fin.tv_nsec += 1000000000;
+   }
+   if(verbose){
+     printf("Durée de calcul: %ld.%09ld\n", fin.tv_sec, fin.tv_nsec);
+     printf("(Attention: très peu de chiffres après la virgule sont réellement significatifs !)\n");
+   }
+   return 0;
 }
