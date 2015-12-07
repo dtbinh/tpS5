@@ -1,0 +1,45 @@
+
+drop table if exists machines;
+drop table if exists fournisseurs;
+drop table if exists commandes;
+drop table if exists pieces;
+
+CREATE TABLE Machines(
+	m_id int primary key,                     
+	name varchar(30) not NULL,
+	prix int,
+	des text
+);
+
+CREATE TABLE Fournisseurs(
+	f_id int primary key,                     	
+	nom varchar(30),
+	add varchar(30),
+	ville varchar(30),
+	tel varchar(30),
+	fax varchar(30)
+
+);
+
+CREATE TABLE Commandes(
+	c_id int primary key,	
+	m_id int references machines(m_id) on delete cascade on update cascade,
+	date date,                     	
+	prix int,
+	client varchar(30),
+	des text
+);
+
+CREATE TABLE Pieces(
+	p_id int primary key,                     
+	f_id int references fournisseurs(f_id) on delete cascade on update cascade,	
+	nom varchar(30),	
+	stock int
+);
+
+
+-- ajout des donnees
+
+insert into machines values(1,'Presse',35000,'');
+insert into machines values(1,'Moissonneuse-batteuse',50000,'');
+insert into commandes values(1,'Presse',35000,'');
